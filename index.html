@@ -555,7 +555,17 @@
                 if (confirm('确定要删除这道菜谱吗？')) {
                     const index = recipes.findIndex(r => r.id === recipeId);
                     if (index > -1) {
+                        // 从本地数组中删除
                         recipes.splice(index, 1);
+                        
+                        // 从 Firebase 中删除对应文档
+                        db.collection("recipes").doc(recipeId).delete().then(() => {
+                            console.log("菜谱已从 Firebase 中删除");
+                        }).catch((error) => {
+                            console.error("删除 Firebase 文档失败: ", error);
+                        });
+                        
+                        // 保存更新后的数据并刷新界面
                         saveRecipes();
                         renderRecipes();
                         viewRecipeModal.classList.add('hidden');
